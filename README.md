@@ -7,20 +7,22 @@
 - 500MB+ RAM for docker
 
 ## Installation
-### Set variables
-Create `.env` file with variables:
-```shell
-MODEL_SIZE="base"
-PORT="8080"
-```
-### docker-compose
-```shell
-docker-compose up -d
-```
+1. __Set variables__.
+    Create `.env` file with variables:
+    ```shell
+    MODEL_SIZE="tiny"
+    PORT="8080"
+    ```
+2. __Run container__
+    Simply use `docker-compose` for run container
+    ```shell
+    docker-compose up -d
+    ```
+3. Wait for some time while whisper model are downloading.
 
 ## Usage
 ### Endpoints
-- http://127.0.0.1:11111/docs - web documentation
+- http://127.0.0.1:8080/docs - fastapi auto documentation
 - http://127.0.0.1:8080/transcribe - post audio endpoint
 - http://127.0.0.1:8080/health - healthcheck endpoint
 
