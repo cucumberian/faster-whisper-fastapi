@@ -1,0 +1,5 @@
+.venv/
+.env
+*.ipynb
+__pycache__/
+whisper_models/

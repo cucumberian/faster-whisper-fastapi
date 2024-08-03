@@ -1,0 +1,4 @@
+fastapi
+faster-whisper
+uvicorn
+python-multipart
