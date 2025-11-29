@@ -1,5 +1,14 @@
 # FastAPI wrapper for [Faster-Whisper](https://github.com/SYSTRAN/faster-whisper)
 
+## Versions
+
+- `1.1.0`
+  - add v2 router with simple text response
+  - add asyncio lock for queening requests
+  - default router are deprecated
+- `1.0.0`
+  - `/transcribe` router
+
 ## Requirements
 
 - Python3.8 +
@@ -7,45 +16,47 @@
 - 500MB+ RAM for docker
 
 ## Installation
+
 1. __Set variables__.
     Create `.env` file with variables:
+
     ```shell
     MODEL_SIZE="tiny"
     PORT="8080"
     ```
+
 2. __Run container__
     Simply use `docker-compose` for run container
+
     ```shell
     docker-compose up -d
     ```
+
 3. Wait for some time while whisper model are downloading.
 
 ## Usage
+
 ### Endpoints
-- http://127.0.0.1:8080/docs - fastapi auto documentation
-- http://127.0.0.1:8080/transcribe - post audio endpoint
+
+- http://127.0.0.1:8080/v2/transcribe - post audio endpoint
+- http://127.0.0.1:8080/transcribe - __deprecated__ - post audio endpoint
 - http://127.0.0.1:8080/health - healthcheck endpoint
+- http://127.0.0.1:8080/docs - fastapi auto documentation
 
 ### examples
+
 #### post example
+
 ```shell
 curl -X 'POST' \
-  'http://127.0.0.1:8080/transcribe' \
+  'http://127.0.0.1:8080/v2/transcribe' \
   -H 'accept: application/json' \
   -H 'Content-Type: multipart/form-data' \
   -F 'audio=@voice.ogg;type=video/ogg'
 ```
+
 #### response example
-```json
-{
-  "status": "ok",
-  "response": "transcribed words from audio"
-}
-```
 
 ```json
-{
-  "status": "error",
-  "response": "some error info"
-}
+"transcribed text"
 ```

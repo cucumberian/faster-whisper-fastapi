@@ -1,53 +1,52 @@
-import os
 from typing import Literal
 
-from fastapi import FastAPI
-from fastapi import UploadFile
-from fastapi import Response
 import uvicorn
+from fastapi import FastAPI, Response, UploadFile, status
+from fastapi.requests import Request
+from fastapi.responses import JSONResponse, RedirectResponse
 
-from faster_whisper import WhisperModel
-
-
-models_dir = os.path.join(os.path.dirname(__file__), "whisper_models/")
-if not os.path.exists(models_dir):
-    os.mkdir(models_dir)
-
-model_size = os.getenv("MODEL_SIZE", "tiny")
-model = WhisperModel(
-    model_size_or_path=model_size,
-    device="auto",
-    compute_type="int8",
-    download_root=models_dir,
-    local_files_only=False,
-)
-
+from depends import model, lock
+from router.v2.v2_router import v2_router
 
 app = FastAPI()
+app.include_router(v2_router)
+
+
+@app.get("/", include_in_schema=False)
+def docs():
+    return RedirectResponse(url="/docs")
 
 
 @app.get("/health")
-async def health():
+def health():
     return {"status": "ok"}
 
 
-@app.post("/transcribe")
+@app.post("/transcribe", deprecated=True)
 async def transcribe(
     response: Response, audio: UploadFile
 ) -> dict[Literal["response", "status"], str]:
-    try:
-        segments, info = model.transcribe(audio=audio.file, beam_size=5)
-        text = "".join([segment.text for segment in segments])
-        return {
-            "status": "ok",
-            "response": text,
-        }
-    except Exception as e:
-        response.status_code = 500
-        return {
-            "status": "error",
-            "response": f"error: {e}",
-        }
+    async with lock:
+        try:
+            segments, info = model.transcribe(audio=audio.file, beam_size=5)
+            text = "".join([segment.text for segment in segments])
+            return {
+                "status": "ok",
+                "response": text,
+            }
+        except Exception as e:
+            response.status_code = 500
+            return {
+                "status": "error",
+                "response": f"error: {e}",
+            }
+
+
+@app.exception_handler(Exception)
+def handle_exception(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": str(exc)}
+    )
 
 
 if __name__ == "__main__":
