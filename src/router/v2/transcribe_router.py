@@ -5,7 +5,7 @@ from depends import lock, model
 transcribe_router = APIRouter(prefix="/transcribe", tags=["transcribe"])
 
 
-@transcribe_router.post("/")
+@transcribe_router.post("")
 async def transcribe(audio: UploadFile) -> str:
     async with lock:
         segments, _ = model.transcribe(audio=audio.file)

@@ -12,3 +12,7 @@ COPY requirements.freeze .
 RUN pip3 install --no-cache-dir -r requirements.freeze
 
 COPY app.py .
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+
+EXPOSE 8000
