@@ -1,3 +1,4 @@
+import os
 from typing import Literal
 
 import uvicorn
@@ -7,6 +8,10 @@ from fastapi.responses import JSONResponse, RedirectResponse
 
 from depends import model, lock
 from router.v2.v2_router import v2_router
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 app = FastAPI()
 app.include_router(v2_router)
@@ -50,4 +55,9 @@ def handle_exception(request: Request, exc: Exception):
 
 
 if __name__ == "__main__":
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(
+        "app:app",
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 8000)),
+        reload=True,
+    )

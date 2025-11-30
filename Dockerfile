@@ -8,10 +8,10 @@ RUN mkdir -p ${APP_HOME}
 
 WORKDIR ${APP_HOME}
 
-COPY requirements.freeze .
-RUN pip3 install --no-cache-dir -r requirements.freeze
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-COPY app.py .
+COPY src .
 
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
 
